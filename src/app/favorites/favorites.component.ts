@@ -1,16 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FavoriteImage } from '../../assets/type';
+import { FavoriteImage } from '../type';
 import { ImgContainerComponent } from '../img-container/img-container.component';
 import { FavoriteService } from '../services/favorite.service';
-import { ListService } from '../services/list.service';
 
 @Component({
   selector: 'app-favorites',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, ImgContainerComponent],
+  // standalone: true,
+  imports: [RouterOutlet, ImgContainerComponent],
   templateUrl: './favorites.component.html',
   styleUrl: './favorites.component.css',
 })

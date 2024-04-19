@@ -1,22 +1,12 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { Image, MaxIdValue } from '../../assets/type';
-import { MatIconModule } from '@angular/material/icon';
+import { Image, MaxIdValue } from '../type';
 import { ListService } from '../services/list.service';
 import { ImgContainerComponent } from '../img-container/img-container.component';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-list',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    FormsModule,
-    RouterOutlet,
-    ImgContainerComponent,
-  ],
+  // standalone: true,
+  imports: [ImgContainerComponent],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css',
 })

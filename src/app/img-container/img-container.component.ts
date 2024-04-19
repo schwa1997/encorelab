@@ -1,13 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { FavoriteService } from '../services/favorite.service';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-img-container',
-  standalone: true,
-  imports: [MatIconModule, CommonModule, RouterModule],
+  // standalone: true,
+  imports: [RouterModule],
   templateUrl: './img-container.component.html',
   styleUrl: './img-container.component.css',
 })

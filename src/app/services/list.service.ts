@@ -10,7 +10,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { Image, MaxIdValue } from '../../assets/type';
+import { Image, MaxIdValue } from '../type';
 
 @Injectable({
   providedIn: 'root',

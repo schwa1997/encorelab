@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FavoriteImage } from '../../assets/type';
+import { FavoriteImage } from '../type';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ListService } from './list.service';
 
