@@ -1,7 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { ListComponent } from './list/list.component';
 import { FavoritesComponent } from './favorites/favorites.component';
 import { NgModule } from '@angular/core';
@@ -15,7 +14,6 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     BrowserModule,
     HttpClientModule,
-    MatIconModule,
     ImgContainerComponent,
     HttpClientModule,
     FormsModule,
