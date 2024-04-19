@@ -7,7 +7,6 @@ import { FavoriteService } from '../services/favorite.service';
 
 @Component({
   selector: 'app-favorites',
-  // standalone: true,
   imports: [RouterOutlet, ImgContainerComponent],
   templateUrl: './favorites.component.html',
   styleUrl: './favorites.component.css',
