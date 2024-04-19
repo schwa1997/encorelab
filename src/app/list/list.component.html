@@ -1,0 +1,69 @@
+<main class="main">
+  <div class="content">
+    <h1
+      class="text-3xl font-bold underline text-green-200 bg-green-950 text-center"
+    >
+      number of images {{ images.length }}
+    </h1>
+    <button (click)="toggleSearch()">
+      <mat-icon>{{
+        searchDisabled ? "search" : "clear"
+      }}</mat-icon>
+    </button>
+    <form
+      *ngIf="! searchDisabled"
+      class="bg-green-400 p-2"
+      (ngSubmit)="handleSearch()"
+      #searchForm="ngForm"
+    >
+      <select [(ngModel)]="searchType" name="searchType">
+        <option value="id">By Id</option>
+        <option value="author">By Author</option>
+      </select>
+      <input
+        type="text"
+        placeholder="Search term"
+        name="searchInput"
+        [(ngModel)]="searchTerm"
+        required
+        minlength="1"
+        #searchInput="ngModel"
+      />
+      <div
+        *ngIf="
+          searchType === 'id' &&
+          searchInput.value &&
+          !validateId(searchInput.value)
+        "
+      >
+        ID must be between 0 and 1084.
+      </div>
+    
+      <button
+        class="bg-green-300 rounded-r-lg px-2 text-white hover:bg-green-500"
+        type="submit"
+        [disabled]="
+          searchForm.invalid ||
+          (searchType === 'id' && !validateId(searchInput.value))
+        "
+      >
+        Search
+      </button>
+    </form>
+    <div *ngIf="isError">Ops! cant find image with this id!</div>
+
+    <div class="flex flex-row flex-wrap justify-center gap-2 mt-4">
+      <ng-container *ngFor="let image of images">
+        <app-img-container
+          [id]="image.id"
+          [author]="image.author"
+          [description]="image.description"
+          [download_url]="image.download_url"
+          [height]="image.height"
+          [width]="image.width"
+        ></app-img-container>
+      </ng-container>
+    </div>
+  </div>
+</main>
+<router-outlet></router-outlet>

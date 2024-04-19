@@ -1,0 +1,24 @@
+<main class="main">
+  <div class="content">
+    <h1
+      class="text-3xl font-bold underline text-green-200 bg-green-950 text-center"
+    >
+      number of favorites images {{ favorites.length }}
+    </h1>
+
+    <div class="flex flex-row flex-wrap place-content-center gap-2 mt-4">
+      <ng-container *ngFor="let favorite of favorites">
+        <app-img-container
+          [id]="favorite.id"
+          [author]="favorite.author"
+          [description]="favorite.description"
+          [download_url]="favorite.download_url"
+          [height]="favorite.height"
+          [width]="favorite.width"
+          [expirationDate]="favorite.expirationDate"
+        ></app-img-container>
+      </ng-container>
+    </div>
+  </div>
+</main>
+<router-outlet></router-outlet>
