@@ -4,10 +4,13 @@ import { RouterOutlet } from '@angular/router';
 import { FavoriteImage } from '../type';
 import { ImgContainerComponent } from '../img-container/img-container.component';
 import { FavoriteService } from '../services/favorite.service';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-favorites',
-  imports: [RouterOutlet, ImgContainerComponent],
+  standalone: true,
+  imports: [RouterOutlet, MatIconModule, CommonModule, ImgContainerComponent],
   templateUrl: './favorites.component.html',
   styleUrl: './favorites.component.css',
 })

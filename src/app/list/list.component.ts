@@ -1,16 +1,27 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Image, MaxIdValue } from '../type';
 import { ListService } from '../services/list.service';
+import { RouterOutlet } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 import { ImgContainerComponent } from '../img-container/img-container.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-list',
-  // standalone: true,
-  imports: [ImgContainerComponent],
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    FormsModule,
+    MatIconModule,
+    CommonModule,
+    ImgContainerComponent,
+    MatIconModule,
+  ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css',
 })
-export class ListComponent {
+export class ListComponent implements OnInit {
   images: Image[] = [];
   loadImageCount: number = 0;
   initImageCount: number = 0;
