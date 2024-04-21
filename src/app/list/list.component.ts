@@ -1,4 +1,10 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Inject,
+  PLATFORM_ID,
+  OnInit,
+} from '@angular/core';
 import { Image, MaxIdValue } from '../type';
 import { ListService } from '../services/list.service';
 import { RouterOutlet } from '@angular/router';
@@ -6,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { ImgContainerComponent } from '../img-container/img-container.component';
 import { FormsModule } from '@angular/forms';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-list',
@@ -23,36 +30,78 @@ import { FormsModule } from '@angular/forms';
 })
 export class ListComponent implements OnInit {
   images: Image[] = [];
-  loadImageCount: number = 0;
-  initImageCount: number = 0;
-  currentId: number = 0;
+  //loadding parameters
   isLoading: boolean = false;
+  loadImageCount: number = 1;
+  nextImageId: number = 0;
+  //search parameters
   searchType: string = 'id';
   searchTerm: string = '';
+  searchCount: number = 0;
   isError: boolean = false;
   searchDisabled: boolean = true;
-  constructor(private listService: ListService) {}
+  //screen parameters
+  screenWidth: number = 0;
+  screenHeight: number = 0;
+
+  //use the ListService
+  constructor(
+    private listService: ListService,
+    @Inject(PLATFORM_ID) private platformId: object
+  ) {}
 
   ngOnInit(): void {
-    this.initImageCount = this.calculateInitImageCount();
+    if (isPlatformBrowser(this.platformId)) {
+      this.screenWidth = window.innerWidth;
+      this.screenHeight = window.innerHeight;
+    }
     this.loadImageCount = this.calculateLoadCount();
-    this.getInitImages();
-    window.addEventListener('scroll', this.onScroll.bind(this), true);
+    this.loadImages();
+
+    //
+    setTimeout(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.screenWidth = window.innerWidth;
+        this.screenHeight = window.innerHeight;
+        this.loadImageCount = this.calculateLoadCount();
+      }
+    }, 0);
   }
 
   // 滚动事件处理函数
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event?: any): void {
+    console.log('onresize');
+    if (isPlatformBrowser(this.platformId)) {
+      this.screenWidth = window.innerWidth;
+      this.screenHeight = window.innerHeight;
+      this.loadImageCount = this.calculateLoadCount();
+      //when the small screen changes to big screen and not enough photo displayed on screen
+      if (this.nextImageId <= this.loadImageCount) {
+        this.loadImages();
+      }
+    }
+  }
   @HostListener('window:scroll', ['$event'])
   onScroll(event: Event): void {
     if (this.isScrolledToBottom()) {
-      console.log('at the bottom and load more');
-      this.loadImages();
+      console.log('at the bottom');
+      if (this.searchDisabled) {
+        console.log(
+          'load more,this.nextImageId, this.loadImageCount',
+          this.nextImageId,
+          this.loadImageCount
+        );
+        this.loadImages();
+      }
+      console.log('search is abled');
     }
   }
 
   // 判断是否滚动到页面底部
   private isScrolledToBottom(): boolean {
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.body.offsetHeight;
+    const documentHeight = document.documentElement.scrollHeight;
     const scrollPosition =
       window.scrollY ||
       window.pageYOffset ||
@@ -62,20 +111,27 @@ export class ListComponent implements OnInit {
     const scrollBottomThreshold = 100; // 设置一个阈值，表示距离底部多少像素时开始加载更多图片
 
     return (
-      windowHeight + scrollPosition >= documentHeight - scrollBottomThreshold
+      this.screenHeight + scrollPosition >=
+      documentHeight - scrollBottomThreshold
     );
   }
 
   // 加载图像数据
   private loadImages(): void {
+    console.log(
+      'this.nextImageId, this.loadImageCount',
+      this.nextImageId,
+      this.loadImageCount
+    );
     if (!this.isLoading) {
       this.isLoading = true;
       this.listService
-        .loadImages(this.currentId, this.loadImageCount)
+        .loadImages(this.nextImageId, this.loadImageCount)
         .subscribe({
           next: (response: { images: Image[]; currentId: number }) => {
             this.images.push(...response.images);
-            this.currentId = response.currentId;
+            this.nextImageId = response.currentId;
+            console.log('response.currentId', response.currentId);
             this.isLoading = false;
           },
           error: (error) => {
@@ -88,9 +144,13 @@ export class ListComponent implements OnInit {
   toggleSearch() {
     this.searchDisabled = !this.searchDisabled;
     if (this.searchDisabled) {
-      this.getInitImages();
+      this.nextImageId = 0;
+      this.loadImages();
+      console.log('start reload');
     } else {
+      this.nextImageId = 0;
       this.initSearch();
+      console.log('start search');
     }
   }
   initSearch(): void {
@@ -120,17 +180,30 @@ export class ListComponent implements OnInit {
         );
       }
     } else if (this.searchType === 'author') {
-      console.log('Search by author:', this.searchTerm); // Log search by author
-      this.listService.getPhotoInfoByAuthor(this.searchTerm).subscribe(
-        (response: { images: Image[] }) => {
-          // Assign the response directly to the images array
+      console.log('Search by author:', this.searchTerm);
+
+      this.listService.searchImagesByAuthor(this.searchTerm).subscribe({
+        next: (response: { images: Image[]; count: number }) => {
+          // Assign the response images to the images array
+          this.searchCount = response.count;
           this.images = response.images;
-          console.log('author', this.searchTerm, this.images);
+          console.log(
+            'author',
+            this.searchTerm,
+            this.images,
+            'count',
+            response.count
+          );
+          // Increment to get the next ID
         },
-        (error) => {
-          console.error('Error fetching initial images:', error);
-        }
-      );
+        error: (error) => {
+          console.error('Error fetching images by author:', error);
+          this.isError = true;
+        },
+        complete: () => {
+          // This is the complete handler, you can add any additional logic here if needed
+        },
+      });
     }
   }
 
@@ -139,49 +212,24 @@ export class ListComponent implements OnInit {
     return !isNaN(id) && id >= 0 && id <= MaxIdValue;
   }
 
-  private getInitImages(): void {
-    this.listService.loadImages(this.currentId, this.initImageCount).subscribe({
-      next: (response: { images: Image[]; currentId: number }) => {
-        this.images = response.images;
-        this.currentId = response.currentId;
-      },
-      error: (error) => {
-        console.error('Error fetching initial images:', error);
-      },
-    });
-  }
-  calculateInitImageCount(): number {
-    // 获取当前屏幕的宽度
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    console.log(screenWidth);
-
-    // 计算每个组件的宽度
+  calculateLoadCount(): number {
     const componentWidth = 288; // 假设每个组件的宽度为 96px
     const componentHeight = 288;
     const gap = 8; // 组件之间的间距为 2px
 
-    // 计算每行可以容纳的组件数量
-    const componentsPerRow = Math.floor(screenWidth / (componentWidth + gap));
+    const componentsPerRow = Math.floor(
+      this.screenWidth / (componentWidth + gap)
+    );
 
-    // 假设每个组件的高度也是 96px，则计算每列可以容纳的组件数量
-    // 如果高度不是固定的，需要根据实际情况进行调整
     const componentsPerColumn =
-      Math.floor(screenHeight / (componentHeight + gap)) + 1;
+      Math.floor(this.screenHeight / (componentHeight + gap)) + 1;
 
-    // 计算初始页面可以容纳的组件数量
-    const initImageCount = componentsPerRow * componentsPerColumn;
-    console.log(initImageCount);
-    return initImageCount;
-  }
-  calculateLoadCount(): number {
-    // 获取当前屏幕的宽度
-    const screenWidth = window.innerWidth;
-    const componentWidth = 288; // 假设每个组件的宽度为 288px
-    const gap = 8; // 组件之间的间距为 8px
-    // 计算每行可以容纳的组件数量
-    const componentsPerRow = Math.floor(screenWidth / (componentWidth + gap));
-
-    return componentsPerRow;
+    let loadImageCount: number;
+    if (componentsPerRow == 0) {
+      loadImageCount = (componentsPerRow + 1) * componentsPerColumn;
+    } else {
+      loadImageCount = componentsPerRow * componentsPerColumn;
+    }
+    return loadImageCount;
   }
 }

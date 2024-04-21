@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {
+  EMPTY,
   Observable,
-  Subject,
   catchError,
   forkJoin,
   map,
+  mergeMap,
   of,
-  switchMap,
   tap,
 } from 'rxjs';
 import { Image, MaxIdValue } from '../type';
@@ -17,151 +17,54 @@ import { Image, MaxIdValue } from '../type';
 })
 export class ListService {
   private baseUrl = 'https://picsum.photos/id';
-  public images: Observable<Image>[] = [];
   constructor(private http: HttpClient) {}
-  // getInitImages(
-  //   initImageNumber: number
-  // ): Observable<{ images: Image[]; currentId: number }> {
-  //   const startId = 95;
-  //   const endId = startId + initImageNumber;
 
-  //   // 获取图像的Observable数组
-  //   const images: Observable<Image>[] = [];
-  //   for (let i = startId; i < endId; i++) {
-  //     const id = i.toString();
-  //     const image$ = this.getPhotoInfoById(id).pipe(
-  //       tap((image: Image) => {
-  //         console.log('Received image by id:', id, 'data:', image);
-  //       })
-  //     );
-  //     images.push(image$);
-  //   }
-
-  //   // 返回Observable数组的组合
-  //   return forkJoin(images).pipe(
-  //     map((imagesArray: Image[]) => {
-  //       return { images: imagesArray, currentId: endId };
-  //     })
-  //   );
-  // }
-  getInitImages(
-    initImageNumber: number
-  ): Observable<{ images: Image[]; currentId: number }> {
-    const startId = 95;
-    const endId = startId + initImageNumber;
-
-    // 获取图像的Observable数组
-    const images: Observable<Image|null>[] = [];
-    for (let i = startId; i < endId; i++) {
-      const id = i.toString();
-      const image$ = this.getPhotoInfoById(id).pipe(
-        catchError((error) => {
-          console.error('Error fetching image by id:', id, 'error:', error);
-          // 返回一个空的 Observable，以便跳过当前的操作
-          return of(null);
-        }),
-        tap((image: Image | null) => {
-          if (image) {
-            console.log('Received image by id:', id, 'data:', image);
-          } else {
-            console.log('Image not found for id:', id);
-          }
-        })
-      );
-      images.push(image$);
-    }
-
-    // 返回Observable数组的组合
-    return forkJoin(images).pipe(
-      map((imagesArray: (Image | null)[]) => {
-        const filteredImages = imagesArray.filter(
-          (image) => image !== null
-        ) as Image[];
-        return { images: filteredImages, currentId: endId };
-      })
-    );
-  }
   loadImages(
-    currentImageID: number,loadImageCount:number
+    currentImageID: number,
+    loadImageCount: number
   ): Observable<{ images: Image[]; currentId: number }> {
-    const startId = currentImageID;
-    const endId = startId + loadImageCount;
+    const startId = currentImageID + 1;
+    let loadedImagesCount = 0;
+    const imageRequests: Observable<Image>[] = [];
 
-    // 获取图像的Observable数组
-    const images: Observable<Image|null>[] = [];
-    for (let i = startId; i < endId; i++) {
+    for (let i = startId; loadedImagesCount < loadImageCount; i++) {
       const id = i.toString();
-      const image$ = this.getPhotoInfoById(id).pipe(
+      const imageUrl = `${this.baseUrl}/${id}/info`;
+      const imageRequest = this.http.get<Image>(imageUrl).pipe(
         catchError((error) => {
           console.error('Error fetching image by id:', id, 'error:', error);
-          // 返回一个空的 Observable，以便跳过当前的操作
-          return of(null);
+          return of(null); // Return null if there's an error
         }),
-        tap((image: Image | null) => {
-          if (image) {
-            console.log('Received image by id:', id, 'data:', image);
-          } else {
-            console.log('Image not found for id:', id);
+        mergeMap((image) => {
+          if (image === null) {
+            // If image is null, load another image to fill the gap
+            return this.loadNextImage(i).pipe(
+              catchError((error) => {
+                console.error('Error fetching next image:', error);
+                return EMPTY;
+              })
+            );
           }
+          return of(image);
         })
       );
-      images.push(image$);
+      imageRequests.push(imageRequest);
+      loadedImagesCount++;
     }
 
-    // 返回Observable数组的组合
-    return forkJoin(images).pipe(
-      map((imagesArray: (Image | null)[]) => {
-        const filteredImages = imagesArray.filter(
-          (image) => image !== null
-        ) as Image[];
-        return { images: filteredImages, currentId: endId };
-      })
-    );
-  }
-
-  
-  // loadMoreImages(
-  //   currentId: number,
-  //   maxId: number
-  // ): Observable<{ images: Image[]; currentId: number }> {
-  //   const startId = currentId + 1;
-  //   const endId = currentId + maxId;
-
-  //   const images: Observable<Image>[] = [];
-  //   for (let i = startId; i <= endId; i++) {
-  //     const id = i.toString();
-  //     const image$ = this.getPhotoInfoById(id).pipe(
-  //       tap((image: Image) => {
-  //         // console.log('Received image by id:', id, 'data:', image);
-  //       })
-  //     );
-  //     images.push(image$);
-  //   }
-
-  //   return forkJoin(images).pipe(
-  //     map((imagesArray: Image[]) => {
-  //       return { images: imagesArray, currentId: endId };
-  //     })
-  //   );
-  // }
-  getAllImages(): Observable<{ images: Image[] }> {
-    const observables: Observable<Image | null>[] = [];
-    for (let i = 0; i <= 100; i++) {
-      const id = i.toString();
-      const image$ = this.getPhotoInfoById(id).pipe(
-        tap((image: Image | null) => {
-          console.log('Received image by id:', id, 'data:', image);
-        })
-      );
-      observables.push(image$);
-    }
-
-    return forkJoin(observables).pipe(
-      map((imagesArray: (Image | null)[]) => ({
-        images: imagesArray.filter((image) => !!image) as Image[],
+    return forkJoin(imageRequests).pipe(
+      map((imagesArray: Image[]) => ({
+        images: imagesArray.filter((image) => image !== null),
+        currentId: Number(imagesArray[imagesArray.length - 1].id), // Subtract 1 to get the last loaded image ID
       }))
     );
   }
+
+  loadNextImage(id: number): Observable<Image> {
+    const nextImageUrl = `${this.baseUrl}/${id + 1}/info`;
+    return this.http.get<Image>(nextImageUrl);
+  }
+
   getPhotoInfoById(id: string): Observable<Image> {
     const imageUrl = `${this.baseUrl}/${id}/info`;
     return this.http.get<Image>(imageUrl).pipe(
@@ -169,25 +72,163 @@ export class ListService {
         console.error('An error occurred while fetching image:', error);
         throw error;
       }),
-      switchMap(async (image: Image) => {
-        const description = await this.generateDescription();
-        return { ...image, description }; //
-      })
-    );
-  }
-  getPhotoInfoByAuthor(author: string): Observable<{ images: Image[] }> {
-    return this.getAllImages().pipe(
-      map((allImages) => {
-        return {
-          images: allImages.images.filter((image) =>
-            image.author.toLowerCase().includes(author.toLowerCase())
-          ),
-        };
+      tap((image: Image) => {
+        const description = this.generateDescription(imageUrl);
+        console.log('description', description);
+        return { ...image, description };
       })
     );
   }
 
-  generateDescription(): string {
-    return 'automatic description';
+  loadImagesByAuthorName(
+    currentImageID: number,
+    loadImageCount: number,
+    author: string
+  ): Observable<{ images: Image[]; currentId: number }> {
+    const startId = currentImageID + 1;
+    let loadedImagesCount = 0;
+    const imageRequests: Observable<Image>[] = [];
+
+    for (let i = startId; loadedImagesCount < loadImageCount; i++) {
+      const id = i.toString();
+      const imageUrl = `${this.baseUrl}/${id}/info`;
+      const imageRequest = this.http.get<Image>(imageUrl).pipe(
+        catchError((error) => {
+          console.error('Error fetching image by id:', id, 'error:', error);
+          return of(null); // Return null if there's an error
+        }),
+        mergeMap((image) => {
+          if (image === null) {
+            // If image is null, load another image to fill the gap
+            return this.loadNextImage(i).pipe(
+              catchError((error) => {
+                console.error('Error fetching next image:', error);
+                return EMPTY;
+              })
+            );
+          }
+          return of(image);
+        })
+      );
+      imageRequests.push(imageRequest);
+      loadedImagesCount++;
+    }
+
+    return forkJoin(imageRequests).pipe(
+      map((imagesArray: Image[]) => ({
+        images: imagesArray.filter((image) => image !== null),
+        currentId: startId + loadedImagesCount - 1, // Subtract 1 to get the last loaded image ID
+      }))
+    );
+  }
+
+  generateDescription(imageUrl: string): Observable<string> {
+    const params = new HttpParams()
+      .set('imageUrl', imageUrl)
+      .set('useEmojis', 'true')
+      .set('useHashtags', 'true')
+      .set('limit', '1');
+
+    return this.http
+      .get<any>('https://image-caption-generator2.p.rapidapi.com/v2/captions', {
+        params,
+      })
+      .pipe(
+        map((response) => {
+          // Assuming the response has a data property containing the caption
+          const caption = response[0]?.caption || 'ahdsfdja';
+          console.log('caption', caption);
+          return caption;
+        }),
+        catchError((error) => {
+          throw 'Error generating caption: ' + error.message;
+        })
+      );
+  }
+
+  loadImagesByAuthor(
+    currentImageID: number,
+    loadImageCount: number,
+    author: string
+  ): Observable<{ images: Image[]; currentId: number }> {
+    const startId = currentImageID + 1;
+    let loadedImagesCount = 0;
+    const imageRequests: Observable<Image>[] = [];
+
+    for (let i = startId; loadedImagesCount < loadImageCount; i++) {
+      const id = i.toString();
+      const imageUrl = `${this.baseUrl}/${id}/info`;
+      const imageRequest = this.http.get<Image>(imageUrl).pipe(
+        catchError((error) => {
+          console.error('Error fetching image by id:', id, 'error:', error);
+          return of(null); // Return null if there's an error
+        }),
+        mergeMap((image) => {
+          if (
+            image === null ||
+            !image.author.toLowerCase().includes(author.toLowerCase())
+          ) {
+            // If image is null, load another image to fill the gap
+            return this.loadNextImage(i).pipe(
+              catchError((error) => {
+                console.error('Error fetching next image:', error);
+                return EMPTY;
+              })
+            );
+          }
+          if (image.author.toLowerCase().includes(author.toLowerCase())) {
+            console.log('image.author.toLowerCase().includes', image);
+          }
+          return of(image);
+        })
+      );
+      imageRequests.push(imageRequest);
+      loadedImagesCount++;
+    }
+
+    return forkJoin(imageRequests).pipe(
+      map((imagesArray: Image[]) => ({
+        images: imagesArray.filter((image) => image !== null),
+        currentId: startId + loadedImagesCount - 1, // Subtract 1 to get the last loaded image ID
+      }))
+    );
+  }
+  searchImagesByAuthor(
+    author: string
+  ): Observable<{ images: Image[]; count: number }> {
+    let loadedImagesCount = 0;
+    const imageRequests: Observable<Image>[] = [];
+
+    for (let i = 0; i < MaxIdValue; i++) {
+      const id = i.toString();
+      const imageUrl = `${this.baseUrl}/${id}/info`;
+      const imageRequest = this.http.get<Image>(imageUrl).pipe(
+        catchError((error) => {
+          console.error('Error fetching image by id:', id, 'error:', error);
+          return of(null); // Return null if there's an error
+        }),
+        mergeMap((image) => {
+          if (
+            image === null ||
+            !image.author.toLowerCase().includes(author.toLowerCase())
+          ) {
+            return of(null as unknown as Image);
+          }
+          if (image.author.toLowerCase().includes(author.toLowerCase())) {
+            console.log('image.author.toLowerCase().includes', image);
+          }
+          return of(image);
+        })
+      );
+      imageRequests.push(imageRequest);
+      loadedImagesCount++;
+    }
+
+    return forkJoin(imageRequests).pipe(
+      map((imagesArray: Image[]) => ({
+        images: imagesArray.filter((image) => image !== null),
+        count: loadedImagesCount, // Subtract 1 to get the last loaded image ID
+      }))
+    );
   }
 }

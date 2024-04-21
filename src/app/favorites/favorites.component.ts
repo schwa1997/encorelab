@@ -16,30 +16,21 @@ import { CommonModule } from '@angular/common';
 })
 export class FavoritesComponent implements OnInit, OnDestroy {
   favorites: FavoriteImage[] = [];
-  private favoritesSubscription: Subscription = new Subscription();
+  private favoritesSubscription: Subscription;
 
-  constructor(private favoriteService: FavoriteService) {}
+  constructor(private favoriteService: FavoriteService) {
+    this.favoritesSubscription = this.favoriteService
+      .getFavoritesObservable()
+      .subscribe((favorites) => {
+        this.favorites = favorites;
+      });
+  }
 
   ngOnInit(): void {
-    this.favoritesSubscription = this.favoriteService.favorites$.subscribe(
-      () => {
-        this.getFavorites();
-        this.checkFavorites();
-      }
-    );
+    this.favoriteService.updateFavorites(); // 更新收藏夹
   }
 
   ngOnDestroy(): void {
-    // 取消订阅以避免内存泄漏
-    this.favoritesSubscription.unsubscribe();
-  }
-
-  getFavorites() {
-    const favorites: FavoriteImage[] = this.favoriteService.favorites;
-    this.favorites = favorites;
-  }
-  checkFavorites() {
-    const favorites: FavoriteImage[] = this.favoriteService.updateFavorites();
-    this.favorites = favorites;
+    this.favoritesSubscription.unsubscribe(); // 取消订阅以避免内存泄漏
   }
 }
