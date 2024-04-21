@@ -37,8 +37,7 @@ export class ListComponent implements OnInit {
   //search parameters
   searchType: string = 'id';
   searchTerm: string = '';
-  searchCount: number = 0;
-  isError: boolean = false;
+  noImageFound: boolean = false;
   searchDisabled: boolean = true;
   //screen parameters
   screenWidth: number = 0;
@@ -68,8 +67,7 @@ export class ListComponent implements OnInit {
     }, 0);
   }
 
-  // 滚动事件处理函数
-
+  // onResize
   @HostListener('window:resize', ['$event'])
   onResize(event?: any): void {
     console.log('onresize');
@@ -83,23 +81,18 @@ export class ListComponent implements OnInit {
       }
     }
   }
+  //onScroll
   @HostListener('window:scroll', ['$event'])
   onScroll(event: Event): void {
     if (this.isScrolledToBottom()) {
       console.log('at the bottom');
       if (this.searchDisabled) {
-        console.log(
-          'load more,this.nextImageId, this.loadImageCount',
-          this.nextImageId,
-          this.loadImageCount
-        );
         this.loadImages();
       }
-      console.log('search is abled');
     }
   }
 
-  // 判断是否滚动到页面底部
+  // isScrolledToBottom
   private isScrolledToBottom(): boolean {
     const documentHeight = document.documentElement.scrollHeight;
     const scrollPosition =
@@ -108,15 +101,14 @@ export class ListComponent implements OnInit {
       document.documentElement.scrollTop ||
       document.body.scrollTop ||
       0;
-    const scrollBottomThreshold = 100; // 设置一个阈值，表示距离底部多少像素时开始加载更多图片
-
+    const scrollBottomThreshold = 100;
     return (
       this.screenHeight + scrollPosition >=
       documentHeight - scrollBottomThreshold
     );
   }
 
-  // 加载图像数据
+  // loadImages
   private loadImages(): void {
     console.log(
       'this.nextImageId, this.loadImageCount',
@@ -131,7 +123,6 @@ export class ListComponent implements OnInit {
           next: (response: { images: Image[]; currentId: number }) => {
             this.images.push(...response.images);
             this.nextImageId = response.currentId;
-            console.log('response.currentId', response.currentId);
             this.isLoading = false;
           },
           error: (error) => {
@@ -163,45 +154,32 @@ export class ListComponent implements OnInit {
       if (id > MaxIdValue && id < 0) {
         console.error('is should be between 0 and 1084');
       } else {
-        console.log('this.searchTerm', this.searchTerm);
-        this.listService.getPhotoInfoById(this.searchTerm).subscribe(
+        this.listService.getImageById(this.searchTerm).subscribe(
           (response: Image | null) => {
             if (response !== null) {
-              this.isError = false;
-              this.images = [response]; // Update images if response is not null
+              this.noImageFound = false;
+              this.images = [response];
             } else {
-              console.warn(`Image not found for ID: ${this.searchTerm}`);
+              this.noImageFound = true;
             }
           },
           (error) => {
             console.error(`Image not found for ID: ${this.searchTerm}`);
-            this.isError = true;
+            this.noImageFound = true;
           }
         );
       }
     } else if (this.searchType === 'author') {
-      console.log('Search by author:', this.searchTerm);
-
-      this.listService.searchImagesByAuthor(this.searchTerm).subscribe({
-        next: (response: { images: Image[]; count: number }) => {
-          // Assign the response images to the images array
-          this.searchCount = response.count;
+      this.listService.getImagesByAuthor(this.searchTerm).subscribe({
+        next: (response: { images: Image[] }) => {
           this.images = response.images;
-          console.log(
-            'author',
-            this.searchTerm,
-            this.images,
-            'count',
-            response.count
-          );
-          // Increment to get the next ID
         },
         error: (error) => {
           console.error('Error fetching images by author:', error);
-          this.isError = true;
+          this.noImageFound = true;
         },
         complete: () => {
-          // This is the complete handler, you can add any additional logic here if needed
+        
         },
       });
     }

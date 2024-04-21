@@ -65,7 +65,7 @@ export class ListService {
     return this.http.get<Image>(nextImageUrl);
   }
 
-  getPhotoInfoById(id: string): Observable<Image> {
+  getImageById(id: string): Observable<Image> {
     const imageUrl = `${this.baseUrl}/${id}/info`;
     return this.http.get<Image>(imageUrl).pipe(
       catchError(async (error) => {
@@ -77,48 +77,6 @@ export class ListService {
         console.log('description', description);
         return { ...image, description };
       })
-    );
-  }
-
-  loadImagesByAuthorName(
-    currentImageID: number,
-    loadImageCount: number,
-    author: string
-  ): Observable<{ images: Image[]; currentId: number }> {
-    const startId = currentImageID + 1;
-    let loadedImagesCount = 0;
-    const imageRequests: Observable<Image>[] = [];
-
-    for (let i = startId; loadedImagesCount < loadImageCount; i++) {
-      const id = i.toString();
-      const imageUrl = `${this.baseUrl}/${id}/info`;
-      const imageRequest = this.http.get<Image>(imageUrl).pipe(
-        catchError((error) => {
-          console.error('Error fetching image by id:', id, 'error:', error);
-          return of(null); // Return null if there's an error
-        }),
-        mergeMap((image) => {
-          if (image === null) {
-            // If image is null, load another image to fill the gap
-            return this.loadNextImage(i).pipe(
-              catchError((error) => {
-                console.error('Error fetching next image:', error);
-                return EMPTY;
-              })
-            );
-          }
-          return of(image);
-        })
-      );
-      imageRequests.push(imageRequest);
-      loadedImagesCount++;
-    }
-
-    return forkJoin(imageRequests).pipe(
-      map((imagesArray: Image[]) => ({
-        images: imagesArray.filter((image) => image !== null),
-        currentId: startId + loadedImagesCount - 1, // Subtract 1 to get the last loaded image ID
-      }))
     );
   }
 
@@ -146,56 +104,7 @@ export class ListService {
       );
   }
 
-  loadImagesByAuthor(
-    currentImageID: number,
-    loadImageCount: number,
-    author: string
-  ): Observable<{ images: Image[]; currentId: number }> {
-    const startId = currentImageID + 1;
-    let loadedImagesCount = 0;
-    const imageRequests: Observable<Image>[] = [];
-
-    for (let i = startId; loadedImagesCount < loadImageCount; i++) {
-      const id = i.toString();
-      const imageUrl = `${this.baseUrl}/${id}/info`;
-      const imageRequest = this.http.get<Image>(imageUrl).pipe(
-        catchError((error) => {
-          console.error('Error fetching image by id:', id, 'error:', error);
-          return of(null); // Return null if there's an error
-        }),
-        mergeMap((image) => {
-          if (
-            image === null ||
-            !image.author.toLowerCase().includes(author.toLowerCase())
-          ) {
-            // If image is null, load another image to fill the gap
-            return this.loadNextImage(i).pipe(
-              catchError((error) => {
-                console.error('Error fetching next image:', error);
-                return EMPTY;
-              })
-            );
-          }
-          if (image.author.toLowerCase().includes(author.toLowerCase())) {
-            console.log('image.author.toLowerCase().includes', image);
-          }
-          return of(image);
-        })
-      );
-      imageRequests.push(imageRequest);
-      loadedImagesCount++;
-    }
-
-    return forkJoin(imageRequests).pipe(
-      map((imagesArray: Image[]) => ({
-        images: imagesArray.filter((image) => image !== null),
-        currentId: startId + loadedImagesCount - 1, // Subtract 1 to get the last loaded image ID
-      }))
-    );
-  }
-  searchImagesByAuthor(
-    author: string
-  ): Observable<{ images: Image[]; count: number }> {
+  getImagesByAuthor(author: string): Observable<{ images: Image[] }> {
     let loadedImagesCount = 0;
     const imageRequests: Observable<Image>[] = [];
 
@@ -227,7 +136,6 @@ export class ListService {
     return forkJoin(imageRequests).pipe(
       map((imagesArray: Image[]) => ({
         images: imagesArray.filter((image) => image !== null),
-        count: loadedImagesCount, // Subtract 1 to get the last loaded image ID
       }))
     );
   }

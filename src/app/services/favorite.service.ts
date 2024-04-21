@@ -14,28 +14,28 @@ export class FavoriteService {
     this.favoritesSubject.asObservable();
   constructor(private listService: ListService) {}
   addToFavorite(id: string) {
-    if (this.verifyFavoriteById(id)) {
-      console.log('This item is already in favorites.');
-      return;
-    }
-    this.listService.getPhotoInfoById(id).subscribe(
-      (item) => {
-        if (item) {
-          const itemWithExpiration = {
-            ...item,
-            expirationDate: new Date(new Date().getTime() + 1 * 60 * 1000), // 1 mins after current date
-          };
-          this.favorites.push(itemWithExpiration);
-          this.refreshFavorites();
-        } else {
-          // Handle the scenario where image data is not found
-          console.warn(`Image not found for ID: ${id}`);
+    if (!this.verifyFavoriteById(id)) {
+      this.listService.getImageById(id).subscribe(
+        (item) => {
+          if (item) {
+            const itemWithExpiration = {
+              ...item,
+              expirationDate: new Date(new Date().getTime() + 1 * 60 * 1000), // 1 mins after current date
+            };
+            this.favorites.push(itemWithExpiration);
+            this.refreshFavorites();
+          } else {
+            // Handle the scenario where image data is not found
+            console.warn(`Image not found for ID: ${id}`);
+          }
+        },
+        (error) => {
+          console.error('Error fetching image info:', error);
         }
-      },
-      (error) => {
-        console.error('Error fetching image info:', error);
-      }
-    );
+      );
+    } else {
+      console.log('This item is already in favorites with the given ID:', id);
+    }
   }
 
   deleteFavorite(id: string) {
@@ -51,75 +51,27 @@ export class FavoriteService {
   verifyFavoriteById(id: string): boolean {
     return this.favorites.some((favorite) => favorite.id === id);
   }
-
-  // updateFavorites(): FavoriteImage[] {
-  //   const currentTime: number = Date.now(); // 获取当前时间戳
-  //   this.favorites.forEach((item) => {
-  //     // 检查是否存在有效的 expirationDate
-  //     if (!item.expirationDate || item.expirationDate.getTime() < currentTime) {
-  //       console.log(item.id, 'this id expired or has invalid expiration date');
-  //       // 将过期或者无效的项目标记为过期，并删除
-  //       this.deleteFavorite(item.id);
-  //       return; // 立即返回，以避免继续执行后续代码
-  //     }
-  //   });
-  //   const updatedFavorites = [...this.favorites];
-  //   this.favoritesSubject.next(updatedFavorites);
-  //   return updatedFavorites;
-  // }
-  // updateFavorites(): FavoriteImage[] {
-  //   const currentTime: number = Date.now(); // 获取当前时间戳
-  //   const updatedFavorites: FavoriteImage[] = [];
-
-  //   this.favorites.forEach((item) => {
-  //     // 检查是否存在有效的 expirationDate
-  //     if (!item.expirationDate || item.expirationDate.getTime() < currentTime) {
-  //       console.log(item.id, 'this id expired or has invalid expiration date');
-  //       // 将过期或者无效的项目直接删除
-  //       return; // 跳过当前项目
-  //     } else {
-  //       updatedFavorites.push(item);
-  //     }
-  //   });
-
-  //   this.favorites = updatedFavorites; // 更新收藏夹为有效项
-  //   this.favoritesSubject.next(updatedFavorites);
-  //   return updatedFavorites;
-  // }
-
   refreshFavorites(): FavoriteImage[] {
-    // 发出更新后的收藏图像列表
     const updatedFavorites = [...this.favorites];
     this.favoritesSubject.next(updatedFavorites);
     return updatedFavorites;
   }
-
-
-
   updateFavorites(): void {
     const currentTime: number = Date.now();
     const updatedFavorites: FavoriteImage[] = [];
-
     this.favorites.forEach((item) => {
       if (!item.expirationDate || item.expirationDate.getTime() < currentTime) {
-        console.log(item.id, 'this id expired or has invalid expiration date');
+        console.warn(item.id, 'this id expired or has invalid expiration date');
         return;
       } else {
         updatedFavorites.push(item);
       }
     });
-
     this.favorites = updatedFavorites;
     this.favoritesSubject.next(updatedFavorites);
   }
-
-  getFavorites(): FavoriteImage[] {
-    return this.favorites;
-  }
-
 
   getFavoritesObservable(): BehaviorSubject<FavoriteImage[]> {
     return this.favoritesSubject;
   }
 }
-

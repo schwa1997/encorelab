@@ -27,10 +27,10 @@ export class FavoritesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.favoriteService.updateFavorites(); // 更新收藏夹
+    this.favoriteService.updateFavorites();
   }
 
   ngOnDestroy(): void {
-    this.favoritesSubscription.unsubscribe(); // 取消订阅以避免内存泄漏
+    this.favoritesSubscription.unsubscribe(); 
   }
 }
