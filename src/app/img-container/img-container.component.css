@@ -2,6 +2,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 18rem;
+    width: 18rem;
     background-color: rgb(241 245 249);
 }
 
@@ -30,16 +32,17 @@
     height: 100%;
     width: 100%;
     backface-visibility: hidden;
-    /* backface-visibility:hidden */
 }
 
 .front {
     z-index: 2;
+    /* backface-visibility: hidden; */
 }
 
 .back {
     z-index: 1;
     transform: rotateY(180deg);
+    /* backface-visibility: hidden; */
 }
 
 .image-container {
@@ -69,35 +72,42 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    /* bg-black/80 */
-    padding: 1rem;
+    background-color: rgba(135, 199, 166, 0.8);
     color: #fff;
-    /* text-white */
-    transform: rotateY(0deg);
     display: flex;
     flex-direction: column;
+    text-align: center;
     justify-content: center;
     align-items: center;
 }
 
+
+.info {
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: auto;
+}
+
+.favorite-button,
+.open-button {
+    width: auto;
+    background: none;
+}
+
+.favorite-button:hover,
+.open-button:hover {
+    background-color: rgba(46, 107, 76, 0.8);
+}
+
 .favorite-button {
-    position: absolute;
-    bottom: 1rem;
-    right: 1.5rem;
+    text-align: right;
 }
 
-.favorite-button button,
-.button-container button {
-    cursor: pointer;
-    color: #fff;
-    /* text-white */
-    background-color: transparent;
-    border: none;
-}
-
-.favorite-button button:hover,
-.button-container button:hover {
-    color: var(--themedOrange);
-    /* dark:hover:text-themedOrange */
+.open-button {
+    text-align: left;
 }

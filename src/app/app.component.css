@@ -1,8 +1,11 @@
-,main{
+.main {
     margin: 0;
+    padding: 0;
+    background-color: white;
 }
+
 .header {
-    background-color: darkolivegreen;
+    background-color: rgba(135, 199, 166, 0.8);
     color: white;
     padding: 1rem;
     display: flex;
@@ -17,5 +20,8 @@
 
 .nav-item-content {
     color: whitesmoke;
+}
 
+.nav-item-content:hover {
+    color: cadetblue
 }

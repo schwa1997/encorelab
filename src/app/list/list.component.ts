@@ -192,7 +192,7 @@ export class ListComponent implements OnInit {
   }
 
   calculateLoadCount(): number {
-    const componentWidth = 288; // 假设每个组件的宽度为 96px
+    const componentWidth = 288; 
     const componentHeight = 288;
     const gap = 8; // 组件之间的间距为 2px
 
