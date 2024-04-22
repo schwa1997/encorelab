@@ -125,7 +125,7 @@ export class ListService {
     for (let i = 0; i < MaxIdValue; i++) {
       const id = i.toString();
       if (this.failedImageIds[id]) {
-        console.log(`Skipping image ${id}, already failed`);
+        //skipping the failedIm
         continue;
       }
       const imageRequest = this.getImageById(id).pipe(
