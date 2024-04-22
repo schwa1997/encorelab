@@ -51,14 +51,7 @@ export class ListService {
       const imageRequest = this.getImageById(id).pipe(
         catchError((error) => {
           loadedImagesCount--;
-          console.log('loadedImagesCount--', loadedImagesCount);
-          console.error(
-            'Error fetching image by id:',
-            id,
-            'error:',
-            loadedImagesCount,
-            error
-          );
+          console.error('Error fetching image by id:', id, 'error:', error);
           return of(null);
         }),
         mergeMap((image) => {
@@ -70,7 +63,6 @@ export class ListService {
       );
       imageRequests.push(imageRequest);
       loadedImagesCount++;
-      console.log('loadedImagesCount', loadedImagesCount);
     }
 
     return forkJoin(imageRequests).pipe(
