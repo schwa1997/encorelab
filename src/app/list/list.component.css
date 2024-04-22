@@ -6,7 +6,6 @@
   justify-content: start;
   backdrop-filter: blur(10px);
   padding: 1rem;
-  /* Apply blur effect */
 }
 
 .toggle-button {
@@ -22,16 +21,24 @@
 
 .mat-icon {
   font-size: 1.5rem;
-  /* 设置图标的大小 */
   color: white;
-  /* 设置图标的颜色 */
 }
 
-.search-form {}
+
+
+.search-form {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
 .search-button {
-  width: 4rem;
+  width: 2rem;
   height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: whitesmoke;
   background-color: darkgreen;
   border-top-right-radius: 10%;
@@ -55,10 +62,9 @@
 }
 
 .search-tooltip {
-  width: 4rem;
+  width: fit-content;
   height: 2rem;
   color: red;
-
 }
 
 .search-value-tooltip {
@@ -73,6 +79,10 @@
   color: white;
 }
 
+.mat-icon-acko {
+  font-size: 1.0rem;
+  color: red;
+}
 
 .image-container {
   display: flex;

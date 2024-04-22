@@ -1,10 +1,10 @@
 <main class="main">
   <div class="content">
-    <!-- <h1
+    <h1
       class="text-3xl font-bold text-green-200 bg-green-950 text-center"
     >
       number of images {{ images.length }}
-    </h1> -->
+    </h1>
     <div class="search-box">
       <button (click)="toggleSearch()" class="toggle-button">
         <mat-icon class="mat-icon">
@@ -39,9 +39,9 @@
             (searchType === 'id' && !validateId(searchInput.value))
           "
         >
-          Search
+          <mat-icon class="mat-icon">search</mat-icon>
         </button>
-        <span class="search-tooltip">
+        <div class="search-tooltip">
           <span
             *ngIf="
               searchType === 'id' &&
@@ -52,13 +52,6 @@
           >
             ID must be between 0 and 1084.
           </span>
-          <!-- <span
-            *ngIf="!noImageFound && !searchDisabled"
-            class="search-info-tooltip"
-          >
-            Congrats! {{ images.length }} images found!
-          </span> -->
-
           <span
             *ngIf="noImageFound && !ackedError"
             class="search-value-tooltip"
@@ -70,9 +63,9 @@
             (click)="handleAckError()"
             class="acked-button"
           >
-            <mat-icon class="mat-icon">clear</mat-icon>
+            <mat-icon class="mat-icon-acko">clear</mat-icon>
           </button>
-        </span>
+        </div>
       </form>
     </div>
     <div class="image-container">

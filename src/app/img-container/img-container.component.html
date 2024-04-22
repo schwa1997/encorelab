@@ -17,7 +17,8 @@
           <h1 class="font-bold">
             <span class="font-normal">Author:</span> {{ author }}
           </h1>
-          <p *ngIf="expirationDate">description: {{ description }}</p>
+          <p>id: {{ id }}</p>
+          <p>description: {{ description }}</p>
           <div *ngIf="expirationDate">
             <p>Expiration Date: {{ expirationDate | date : "medium" }}</p>
           </div>

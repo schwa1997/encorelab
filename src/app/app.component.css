@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 .header {
-    background-color:darkolivegreen;
-    /* Transparent white background */
+    background-color: darkolivegreen;
+    color: white;
     padding: 1rem;
     display: flex;
     align-items: center;

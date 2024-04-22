@@ -71,7 +71,6 @@ export class ListComponent implements OnInit {
   // onResize
   @HostListener('window:resize', ['$event'])
   onResize(event?: any): void {
-    console.log('onresize');
     if (isPlatformBrowser(this.platformId)) {
       this.screenWidth = window.innerWidth;
       this.screenHeight = window.innerHeight;
@@ -86,7 +85,6 @@ export class ListComponent implements OnInit {
   @HostListener('window:scroll', ['$event'])
   onScroll(event: Event): void {
     if (this.isScrolledToBottom()) {
-      console.log('at the bottom');
       if (this.searchDisabled) {
         this.loadImages();
       }
@@ -111,11 +109,6 @@ export class ListComponent implements OnInit {
 
   // loadImages
   private loadImages(): void {
-    console.log(
-      'this.nextImageId, this.loadImageCount',
-      this.nextImageId,
-      this.loadImageCount
-    );
     if (!this.isLoading) {
       this.isLoading = true;
       this.listService
@@ -123,7 +116,7 @@ export class ListComponent implements OnInit {
         .subscribe({
           next: (response: { images: Image[]; currentId: number }) => {
             this.images.push(...response.images);
-            this.nextImageId = response.currentId;
+            this.nextImageId = response.currentId+1;
             this.isLoading = false;
           },
           error: (error) => {
@@ -134,27 +127,26 @@ export class ListComponent implements OnInit {
     }
   }
   toggleSearch() {
+    //toggle searchDisabled variable
     this.searchDisabled = !this.searchDisabled;
+    //if search is disabled, clear the image, and restart the load from 0;
     if (this.searchDisabled) {
       this.nextImageId = 0;
-      // this.images = [];
+      this.images = [];
       this.loadImages();
-      console.log('start reload');
-    } else {
-      // this.images = [];
+    }
+    //if search is abled, clear the searchType and searchTerm, restart the search from 0
+    else {
       this.nextImageId = 0;
-      this.initSearch();
-      console.log('start search');
+      this.searchType = 'id';
+      this.searchTerm = '';
     }
   }
   handleAckError() {
     this.ackedError = true;
     this.noImageFound = false;
   }
-  initSearch(): void {
-    this.searchType = 'id';
-    this.searchTerm = '';
-  }
+
   handleSearch(): void {
     if (this.searchType === 'id') {
       const id = parseInt(this.searchTerm, 10);
