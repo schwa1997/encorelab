@@ -39,6 +39,7 @@ export class ListComponent implements OnInit {
   searchTerm: string = '';
   noImageFound: boolean = false;
   searchDisabled: boolean = true;
+  ackedError: boolean = false;
   //screen parameters
   screenWidth: number = 0;
   screenHeight: number = 0;
@@ -136,13 +137,19 @@ export class ListComponent implements OnInit {
     this.searchDisabled = !this.searchDisabled;
     if (this.searchDisabled) {
       this.nextImageId = 0;
+      // this.images = [];
       this.loadImages();
       console.log('start reload');
     } else {
+      // this.images = [];
       this.nextImageId = 0;
       this.initSearch();
       console.log('start search');
     }
+  }
+  handleAckError() {
+    this.ackedError = true;
+    this.noImageFound = false;
   }
   initSearch(): void {
     this.searchType = 'id';
@@ -158,6 +165,7 @@ export class ListComponent implements OnInit {
           (response: Image | null) => {
             if (response !== null) {
               this.noImageFound = false;
+              this.ackedError = false;
               this.images = [response];
             } else {
               this.noImageFound = true;
@@ -170,6 +178,9 @@ export class ListComponent implements OnInit {
         );
       }
     } else if (this.searchType === 'author') {
+      if (this.noImageFound == true) {
+        this.noImageFound = false;
+      }
       this.listService.getImagesByAuthor(this.searchTerm).subscribe({
         next: (response: { images: Image[] }) => {
           this.images = response.images;
@@ -178,9 +189,7 @@ export class ListComponent implements OnInit {
           console.error('Error fetching images by author:', error);
           this.noImageFound = true;
         },
-        complete: () => {
-        
-        },
+        complete: () => {},
       });
     }
   }

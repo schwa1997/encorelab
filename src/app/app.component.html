@@ -51,9 +51,12 @@
 </style>
 
 <main>
-  <header class="bg-green-100">
-    <nav class="">
-      <a [routerLink]="['/']">
+  <header class="header">
+    <div class="flex items-center">
+      <a [routerLink]="['/']" class="mr-4">Logo </a>
+    </div>
+    <nav class="flex items-center">
+      <a [routerLink]="['/']" class="mr-4">
         <mat-icon>home</mat-icon>
       </a>
       <a [routerLink]="['/favorites']">

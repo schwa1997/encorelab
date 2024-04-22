@@ -1,0 +1,34 @@
+.main {
+    padding: 2rem;
+  }
+  
+  .content {
+    /* margin: 0 auto; */
+  }
+  
+  .heading {
+    font-size: 1rem; 
+    font-weight: bold;
+    color: whitesmoke; /* green-200 */
+    background-color: olivedrab; /* green-950 */
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .favorite-count {
+    color: #8CC63F; /* green-200 */
+  }
+  
+  .image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+  }
+  
+  .image-container app-img-container {
+    max-width: 300px;
+    margin-bottom: 2rem;
+  }
+  

@@ -1,0 +1,84 @@
+.content {}
+
+.search-box {
+  display: flex;
+  height: 4rem;
+  justify-content: start;
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  /* Apply blur effect */
+}
+
+.toggle-button {
+  width: 2rem;
+  height: 2rem;
+  background-color: darkgreen;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 10%;
+  border-bottom-left-radius: 10%;
+}
+
+.mat-icon {
+  font-size: 1.5rem;
+  /* 设置图标的大小 */
+  color: white;
+  /* 设置图标的颜色 */
+}
+
+.search-form {}
+
+.search-button {
+  width: 4rem;
+  height: 2rem;
+  color: whitesmoke;
+  background-color: darkgreen;
+  border-top-right-radius: 10%;
+  border-bottom-right-radius: 10%;
+}
+
+.search-type,
+.search-term {
+  background-color: darkolivegreen;
+  color: white;
+  height: 2rem;
+  padding-left: 0.5rem;
+}
+
+.search-type {
+  max-width: 80px;
+}
+
+.search-term {
+  max-width: 150px;
+}
+
+.search-tooltip {
+  width: 4rem;
+  height: 2rem;
+  color: red;
+
+}
+
+.search-value-tooltip {
+  color: white;
+  background-color: red;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.search-info-tooltip {
+  color: white;
+}
+
+
+.image-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  gap: 2rem;
+}

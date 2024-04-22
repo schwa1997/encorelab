@@ -1,58 +1,81 @@
 <main class="main">
   <div class="content">
-    <h1
-      class="text-3xl font-bold underline text-green-200 bg-green-950 text-center"
+    <!-- <h1
+      class="text-3xl font-bold text-green-200 bg-green-950 text-center"
     >
       number of images {{ images.length }}
-    </h1>
-    <button (click)="toggleSearch()">
-      <mat-icon>{{
-        searchDisabled ? "search" : "clear"
-      }}</mat-icon>
-    </button>
-    <form
-      *ngIf="! searchDisabled"
-      class="bg-green-400 p-2"
-      (ngSubmit)="handleSearch()"
-      #searchForm="ngForm"
-    >
-      <select [(ngModel)]="searchType" name="searchType">
-        <option value="id">By Id</option>
-        <option value="author">By Author</option>
-      </select>
-      <input
-        type="text"
-        placeholder="Search term"
-        name="searchInput"
-        [(ngModel)]="searchTerm"
-        required
-        minlength="1"
-        #searchInput="ngModel"
-      />
-      <div
-        *ngIf="
-          searchType === 'id' &&
-          searchInput.value &&
-          !validateId(searchInput.value)
-        "
-      >
-        ID must be between 0 and 1084.
-      </div>
-    
-      <button
-        class="bg-green-300 rounded-r-lg px-2 text-white hover:bg-green-500"
-        type="submit"
-        [disabled]="
-          searchForm.invalid ||
-          (searchType === 'id' && !validateId(searchInput.value))
-        "
-      >
-        Search
+    </h1> -->
+    <div class="search-box">
+      <button (click)="toggleSearch()" class="toggle-button">
+        <mat-icon class="mat-icon">
+          {{ searchDisabled ? "search" : "clear" }}
+        </mat-icon>
       </button>
-    </form>
-    <div *ngIf="noImageFound">Ops! cant find image with this id!</div>
+      <form
+        *ngIf="!searchDisabled"
+        class="search-form"
+        (ngSubmit)="handleSearch()"
+        #searchForm="ngForm"
+      >
+        <select [(ngModel)]="searchType" name="searchType" class="search-type">
+          <option value="id">By Id</option>
+          <option value="author">By Author</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Search term"
+          name="searchInput"
+          [(ngModel)]="searchTerm"
+          class="search-term"
+          required
+          minlength="1"
+          #searchInput="ngModel"
+        />
+        <button
+          class="search-button"
+          type="submit"
+          [disabled]="
+            searchForm.invalid ||
+            (searchType === 'id' && !validateId(searchInput.value))
+          "
+        >
+          Search
+        </button>
+        <span class="search-tooltip">
+          <span
+            *ngIf="
+              searchType === 'id' &&
+              searchInput.value &&
+              !validateId(searchInput.value)
+            "
+            class="search-value-tooltip"
+          >
+            ID must be between 0 and 1084.
+          </span>
+          <!-- <span
+            *ngIf="!noImageFound && !searchDisabled"
+            class="search-info-tooltip"
+          >
+            Congrats! {{ images.length }} images found!
+          </span> -->
 
-    <div class="flex flex-row flex-wrap justify-center gap-2 mt-4">
+          <span
+            *ngIf="noImageFound && !ackedError"
+            class="search-value-tooltip"
+          >
+            Ops! can't find image with this id!
+          </span>
+          <button
+            *ngIf="noImageFound && !ackedError"
+            (click)="handleAckError()"
+            class="acked-button"
+          >
+            <mat-icon class="mat-icon">clear</mat-icon>
+          </button>
+        </span>
+      </form>
+    </div>
+    <div class="image-container">
       <ng-container *ngFor="let image of images">
         <app-img-container
           [id]="image.id"

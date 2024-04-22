@@ -1,12 +1,11 @@
 <main class="main">
   <div class="content">
-    <h1
-      class="text-3xl font-bold underline text-green-200 bg-green-950 text-center"
-    >
-      number of favorites images {{ favorites.length }}
-    </h1>
-
-    <div class="flex flex-row flex-wrap place-content-center gap-2 mt-4">
+    <p class="heading">
+      You have
+      <span class="favorite-count">{{ favorites.length }}</span>
+      Favorites
+    </p>
+    <div class="image-container">
       <ng-container *ngFor="let favorite of favorites">
         <app-img-container
           [id]="favorite.id"
