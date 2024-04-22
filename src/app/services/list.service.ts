@@ -141,7 +141,6 @@ export class ListService {
             return of(null as unknown as Image);
           }
           if (image.author.toLowerCase().includes(author.toLowerCase())) {
-            console.log('image.author.toLowerCase().includes', image);
           }
           return of(image);
         })
