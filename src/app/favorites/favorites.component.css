@@ -10,7 +10,7 @@
     font-size: 1rem; 
     font-weight: bold;
     color: whitesmoke; /* green-200 */
-    background-color: olivedrab; /* green-950 */
+    background-color: rgba(135, 199, 166, 0.8); /* green-950 */
     text-align: center;
     padding: 1rem;
     margin-bottom: 1rem;
