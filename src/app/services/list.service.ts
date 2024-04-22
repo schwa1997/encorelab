@@ -25,7 +25,6 @@ export class ListService {
       catchError(async (error) => {
         console.error('An error occurred while fetching image:', error);
         this.failedImageIds[id] = id;
-        console.log('this.failedImageIds', this.failedImageIds);
         throw error;
       }),
       tap((image: Image) => {
