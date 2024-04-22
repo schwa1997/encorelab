@@ -1,19 +1,13 @@
-<div class="flex flex-col justify-center bg-slate-100 dark:bg-slate-900">
-  <div class="group h-72 w-72 perspective-1000px">
-    <div
-      class="relative h-full w-full rounded-xl shadow-xl transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]"
-    >
-      <div class="absolute inset-0">
-        <img
-          class="h-full w-full object-cover shadow-xl shadow-black/40"
-          [src]="download_url"
-          alt="Image"
-        />
+<div class="container">
+  <div class="card">
+    <div class="card-inner">
+      <div class="front">
+        <div class="image-container">
+          <img class="image" src="{{ download_url }}" alt="Image">
+        </div>
       </div>
-      <div
-        class="absolute inset-0 h-full w-full bg-black/80 px-12 text-center text-slate-200 [transform:rotateY(180deg)] [backface-visibility:hidden]"
-      >
-        <div class="flex min-h-full flex-col items-center justify-center">
+      <div class="back">
+        <div class="details-container">
           <h1 class="font-bold">
             <span class="font-normal">Author:</span> {{ author }}
           </h1>
@@ -23,16 +17,12 @@
             <p>Expiration Date: {{ expirationDate | date : "medium" }}</p>
           </div>
 
-          <div
-            class="absolute bottom-4 right-6 dark:text-white dark:hover:text-themedOrange"
-          >
+          <div class="favorite-button">
             <button (click)="handleFavorite()">
-              <mat-icon>{{
-                isFavorite ? "favorite" : "favorite_border"
-              }}</mat-icon>
+              <mat-icon>{{ isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
             </button>
           </div>
-          <div class="dark:text-white">
+          <div class="button-container">
             <button (click)="handleClick()">
               <mat-icon>open_in_new</mat-icon>
             </button>
@@ -42,3 +32,4 @@
     </div>
   </div>
 </div>
+

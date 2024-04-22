@@ -1,7 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+,main{
+    margin: 0;
+}
 .header {
     background-color: darkolivegreen;
     color: white;
@@ -9,4 +8,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.nav-item {
+    display: flex;
+    place-items: center;
+}
+
+.nav-item-content {
+    color: whitesmoke;
+
 }

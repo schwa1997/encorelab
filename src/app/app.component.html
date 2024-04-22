@@ -50,16 +50,16 @@
   }
 </style>
 
-<main>
+<main class="main">
   <header class="header">
-    <div class="flex items-center">
-      <a [routerLink]="['/']" class="mr-4">Logo </a>
+    <div class="nav-item">
+      <a [routerLink]="['/']" class="nav-item-content">Logo </a>
     </div>
-    <nav class="flex items-center">
-      <a [routerLink]="['/']" class="mr-4">
+    <nav class="nav-item">
+      <a [routerLink]="['/']" class="nav-item-content">
         <mat-icon>home</mat-icon>
       </a>
-      <a [routerLink]="['/favorites']">
+      <a [routerLink]="['/favorites']" class="nav-item-content">
         <mat-icon>favorite</mat-icon>
       </a>
     </nav>

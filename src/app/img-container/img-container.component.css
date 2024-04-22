@@ -1,0 +1,103 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(241 245 249);
+}
+
+.card {
+    position: relative;
+    height: 18rem;
+    width: 18rem;
+    perspective: 1000px;
+}
+
+.card-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.5s cubic-bezier(.4, 0, .2, 1);
+    transform-style: preserve-3d;
+}
+
+.card:hover .card-inner {
+    transform: rotateY(180deg);
+}
+
+.front,
+.back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    backface-visibility: hidden;
+    /* backface-visibility:hidden */
+}
+
+.front {
+    z-index: 2;
+}
+
+.back {
+    z-index: 1;
+    transform: rotateY(180deg);
+}
+
+.image-container {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    overflow: hidden;
+}
+
+.image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: filter 0.5s ease;
+    /* transition-all */
+}
+
+.card:hover .image {
+    filter: brightness(0.6);
+    /* darken the image */
+}
+
+.details-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    /* bg-black/80 */
+    padding: 1rem;
+    color: #fff;
+    /* text-white */
+    transform: rotateY(0deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.favorite-button {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+}
+
+.favorite-button button,
+.button-container button {
+    cursor: pointer;
+    color: #fff;
+    /* text-white */
+    background-color: transparent;
+    border: none;
+}
+
+.favorite-button button:hover,
+.button-container button:hover {
+    color: var(--themedOrange);
+    /* dark:hover:text-themedOrange */
+}
