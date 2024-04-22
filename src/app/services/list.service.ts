@@ -148,8 +148,8 @@ export class ListService {
       imageRequests.push(imageRequest);
       loadedImagesCount++;
     }
-    console.log('this.failedImageIds', this.failedImageIds);
 
+    // console.log('this.failedImageIds', this.failedImageIds);
     return forkJoin(imageRequests).pipe(
       map((imagesArray: Image[]) => ({
         images: imagesArray.filter((image) => image !== null),
